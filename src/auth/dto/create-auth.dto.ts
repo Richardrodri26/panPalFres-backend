@@ -1,15 +1,18 @@
-import { IsEmail, IsNotEmpty, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class CreateAuthDto {
+  @IsEmail()
+  email: string;
 
-    @IsEmail()
-    email: string;
+  @IsNotEmpty()
+  @MinLength(5)
+  @MaxLength(50)
+  @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message:
+      'The password must have a Uppercase, lowercase letter and a number',
+  })
+  password: string;
 
-    @IsNotEmpty()
-    @MinLength(5)
-    password: string;
-
-    @IsNotEmpty()
-    fullName: string;
-
+  @IsNotEmpty()
+  fullName: string;
 }
