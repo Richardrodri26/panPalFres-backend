@@ -1,4 +1,5 @@
 import { Product } from "src/products/entities";
+import { Transaction } from "src/transactions/entities/transaction.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
@@ -31,11 +32,17 @@ export class User {
   })
   roles: string[];
 
+  // @OneToMany(
+  //   () => Product,
+  //   (product) => product.user
+  // )
+  // product: Product;
+
   @OneToMany(
-    () => Product,
-    (product) => product.user
+    () => Transaction,
+    (transaction) => transaction.user
   )
-  product: Product;
+  transactions: Transaction[];
 
   @BeforeInsert()
   checkFieldsBeforeInsert() {

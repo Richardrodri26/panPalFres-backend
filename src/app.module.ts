@@ -7,6 +7,9 @@ import { Product, ProductImage } from './products/entities';
 import { ProductsModule } from './products/products.module';
 import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
+import { TransactionsModule } from './transactions/transactions.module';
+
+import { TransactionsDetailsModule } from './transactions-details/transactions-details.module';
 
 @Module({
   imports: [
@@ -25,7 +28,10 @@ import { SeedModule } from './seed/seed.module';
     CommonModule,
     SeedModule,
     AuthModule,
+    TransactionsModule,
     // TypeOrmModule.forFeature([User, Product, ProductImage]),
+    // TypeOrmModule.forFeature([TransactionDetail]),
+    TransactionsDetailsModule,
   ],
 })
 export class AppModule {}

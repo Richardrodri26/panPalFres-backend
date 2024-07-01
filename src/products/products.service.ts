@@ -31,7 +31,7 @@ export class ProductsService {
     try {
       const { images = [], ...productDetails } = createProductDto
 
-      const product = this.productRepository.create({ ...productDetails, images: images.map((image) => this.productImageRepository.create({ url: image })), user })
+      const product = this.productRepository.create({ ...productDetails, images: images.map((image) => this.productImageRepository.create({ url: image })) })
       await this.productRepository.save(product);
 
       return {
@@ -122,7 +122,7 @@ export class ProductsService {
           (image) => this.productImageRepository.create({ url: image })
           )
       }
-      product.user = user;
+      // product.user = user;
       await queryRunner.manager.save(product)
 
       await queryRunner.commitTransaction();

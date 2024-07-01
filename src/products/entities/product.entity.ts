@@ -94,12 +94,12 @@ export class Product {
     )
   images?: ProductImage[]
 
-  @ManyToOne(
-    () => User,
-    (user) => user.product,
-    { eager: true }
-  )
-  user: User
+  // @ManyToOne(
+  //   () => User,
+  //   (user) => user.product,
+  //   { eager: true }
+  // )
+  // user: User
 
   @BeforeInsert()
   checkSlugInsert() {
