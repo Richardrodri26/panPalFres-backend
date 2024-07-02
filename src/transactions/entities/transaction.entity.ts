@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { User } from "src/auth/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { TransactionsDetail } from "src/transactions-details/entities/transactions-detail.entity";
 
 
@@ -28,9 +28,9 @@ export class Transaction {
   )
   user: User
 
-  @ManyToOne(
+  @OneToMany(
     () => TransactionsDetail,
-    (transactionDetail) => transactionDetail.transactions,
+    (transactionDetail) => transactionDetail.id,
     { eager: true }
   )
   transactionDetail: TransactionsDetail

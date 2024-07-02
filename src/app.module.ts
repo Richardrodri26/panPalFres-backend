@@ -22,7 +22,8 @@ import { TransactionsDetailsModule } from './transactions-details/transactions-d
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: true,
+      logging: true
     }),
     ProductsModule,
     CommonModule,

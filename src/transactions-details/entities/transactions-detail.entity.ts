@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Product } from "src/products/entities";
 import { Transaction } from "src/transactions/entities/transaction.entity";
-import { Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "transactionDetail" })
 export class TransactionsDetail {
@@ -14,17 +14,27 @@ export class TransactionsDetail {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToMany(
+  @ManyToOne(
     () => Transaction,
     (transaction) => transaction.transactionDetail,
     // { eager: true }
   )
-  transactions: Transaction[];
+  transactions: Transaction;
 
-  @OneToMany(
+  @ApiProperty({
+    example: 10,
+    description: 'quantity',
+    default: 0
+  })
+  @Column('int', {
+    default: 0,
+  })
+  quantity: number;
+
+  @ManyToOne(
     () => Product,
-    (product) => product,
+    (product) => product.transactionDetails,
     { eager: true }
   )
-  products: Product[];
+  product: Product;
 }

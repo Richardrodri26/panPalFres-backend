@@ -2,6 +2,7 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, ManyToOne, OneT
 import { ProductImage } from './';
 import { User } from 'src/auth/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { TransactionsDetail } from 'src/transactions-details/entities/transactions-detail.entity';
 
 @Entity({ name: "products" })
 export class Product {
@@ -53,16 +54,6 @@ export class Product {
   })
   slug: string;
 
-  @ApiProperty({
-    example: 10,
-    description: 'Product stock',
-    default: 0
-  })
-  @Column('int', {
-    default: 0,
-  })
-  stock: number;
-
   // @ApiProperty({
   //   example: ["M", "XL"],
   //   description: 'Product sizes',
@@ -90,9 +81,15 @@ export class Product {
   @OneToMany(
     () => ProductImage,
     (productImage) => productImage.product, 
-    { cascade: true, eager: true }
+    { cascade: true, eager: true, nullable: true }
     )
   images?: ProductImage[]
+
+  @OneToMany(
+    () => TransactionsDetail,
+    (transactionDetail) => transactionDetail.id, 
+    )
+  transactionDetails?: TransactionsDetail[]
 
   // @ManyToOne(
   //   () => User,

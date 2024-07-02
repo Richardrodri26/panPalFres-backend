@@ -5,17 +5,15 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { randomUUID } from 'crypto';
+import { User } from 'src/auth/entities/user.entity';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { TransactionsDetail } from 'src/transactions-details/entities/transactions-detail.entity';
+import { Repository } from 'typeorm';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { GetUser } from 'src/auth/decorators';
-import { User } from 'src/auth/entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Transaction } from './entities/transaction.entity';
-import { Repository } from 'typeorm';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { randomUUID } from 'crypto';
-import { TransactionsDetail } from 'src/transactions-details/entities/transactions-detail.entity';
-import { TransactionsDetailsService } from 'src/transactions-details/transactions-details.service';
 
 @Injectable()
 export class TransactionsService {
@@ -34,53 +32,62 @@ export class TransactionsService {
   async create(createTransactionDto: CreateTransactionDto, user: User) {
     try {
       const transactionId = randomUUID();
-      const transactionDetailId = randomUUID()
+      const transactionDetailId = randomUUID();
 
-      console.log('transactionDetailId', transactionDetailId)
+      console.log('transactionDetailId', transactionDetailId);
 
-      
+      // const transactionDetail = this.transactionsDetailRepository.create({
+      //   id: transactionDetailId,
+      //   transactions: [
+      //     {
+      //       id: transactionId,
+      //       type: createTransactionDto.type,
+      //       user,
+      //       transactionDetail: {
+      //         id: transactionDetailId,
+      //         products: createTransactionDto.products,
+      //       },
+      //     },
+      //   ],
+      //   products: createTransactionDto.products,
+      // });
 
-      const transactionDetail = this.transactionsDetailRepository.create({
-        id: transactionDetailId,
-        transactions: [
-          {
-            id: transactionId,
-            type: createTransactionDto.type,
-            user,
-            transactionDetail: {
-              id: transactionDetailId,
-              products: createTransactionDto.products
-            }
-          }
-        ],
-        products: createTransactionDto.products,
-      });
+      // // console.log('transactionsExample', transactionsExample)
+      // console.log('transactionDetail', transactionDetail);
 
-      // console.log('transactionsExample', transactionsExample)
-      console.log('transactionDetail', transactionDetail)
+      // const transactionDetailDB =
+      //   await this.transactionsDetailRepository.save(transactionDetail);
 
-      
-      const transactionDetailDB =
-      await this.transactionsDetailRepository.save(transactionDetail);
-      
-      console.log('transactionDetailDB', transactionDetailDB)
-
+      // console.log('transactionDetailDB', transactionDetailDB);
 
       // const transactionDetail = await this.transactionDetailService.create({ products: createTransactionDto.products })
 
       const transaction = this.transactionRepository.create({
-        id: transactionId,
+        // id: transactionId,
         type: createTransactionDto.type,
         user,
-        transactionDetail: transactionDetail,
+        // transactionDetail: transactionDetail,
       });
-
+//a3ac8e59-a741-4646-8d7e-ba69d2d65d73
       await this.transactionRepository.save(transaction);
 
-      return transaction;
+      // return transaction;
+      const details: TransactionsDetail[] = []
 
+      createTransactionDto.products.map(product => {
+        const transactionDetail = this.transactionsDetailRepository.create({
+          transactions: 
+            {
+              id: transaction.id,
+            },
+          product: product,
+        });
+        details.push(transactionDetail)
+      })
 
-    
+        await this.transactionsDetailRepository.save(details)
+
+        return 'hola';
 
     } catch (error) {
       this.handleDBExceptions(error);
