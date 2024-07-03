@@ -106,8 +106,8 @@ export class TransactionsService {
         take: limit,
         skip: offset,
         relations: {
-          // transactionDetail: true,
-          // user: true,
+          transactionDetail: true,
+          user: true,
         },
       });
 
