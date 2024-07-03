@@ -87,7 +87,7 @@ export class Product {
 
   @OneToMany(
     () => TransactionsDetail,
-    (transactionDetail) => transactionDetail.id, 
+    (transactionDetail) => transactionDetail.product, 
     )
   transactionDetails?: TransactionsDetail[]
 

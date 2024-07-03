@@ -23,14 +23,14 @@ export class Transaction {
 
   @ManyToOne(
     () => User,
-    (user) => user.transactions,
+    (user) => user.id,
     { eager: true }
   )
   user: User
 
   @OneToMany(
     () => TransactionsDetail,
-    (transactionDetail) => transactionDetail.id,
+    (transactionDetail) => transactionDetail.transaction,
     { eager: true }
   )
   transactionDetail: TransactionsDetail
