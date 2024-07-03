@@ -69,14 +69,17 @@ export class TransactionsService {
         // transactionDetail: transactionDetail,
       });
 //a3ac8e59-a741-4646-8d7e-ba69d2d65d73
-      await this.transactionRepository.save(transaction);
+      const transactionDB = await this.transactionRepository.save(transaction);
+
+      console.log('transaction', transaction)
+      console.log('transactionDB', transactionDB)
 
       // return transaction;
       const details: TransactionsDetail[] = []
 
       createTransactionDto.products.map(product => {
         const transactionDetail = this.transactionsDetailRepository.create({
-          transactions: 
+          transaction: 
             {
               id: transaction.id,
             },
@@ -85,9 +88,11 @@ export class TransactionsService {
         details.push(transactionDetail)
       })
 
-        await this.transactionsDetailRepository.save(details)
+        const detailsDB = await this.transactionsDetailRepository.save(details)
 
-        return 'hola';
+      console.log('detailsDB', detailsDB)
+
+        return transactionDB;
 
     } catch (error) {
       this.handleDBExceptions(error);
@@ -101,10 +106,12 @@ export class TransactionsService {
         take: limit,
         skip: offset,
         relations: {
-          transactionDetail: true,
-          user: true,
+          // transactionDetail: true,
+          // user: true,
         },
       });
+
+      console.log('transactions', transactions)
 
       return transactions;
     } catch (error) {
@@ -116,7 +123,7 @@ export class TransactionsService {
 
   async findOne(id: string, user: User) {
     try {
-      const transaction = await this.transactionRepository.findOne({
+      const transaction = await this.transactionRepository.find({
         where: {
           id,
           user,

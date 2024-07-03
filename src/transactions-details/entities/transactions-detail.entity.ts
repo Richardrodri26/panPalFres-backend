@@ -19,7 +19,7 @@ export class TransactionsDetail {
     (transaction) => transaction.transactionDetail,
     // { eager: true }
   )
-  transactions: Transaction;
+  transaction: Transaction;
 
   @ApiProperty({
     example: 10,
