@@ -16,7 +16,7 @@ export class TransactionsDetail {
 
   @ManyToOne(
     () => Transaction,
-    (transaction) => transaction.transactionDetail,
+    (transaction) => transaction.id,
     // { eager: true }
   )
   transaction: Transaction;
@@ -33,7 +33,7 @@ export class TransactionsDetail {
 
   @ManyToOne(
     () => Product,
-    (product) => product.transactionDetails,
+    (product) => product.id,
     { eager: true }
   )
   product: Product;

@@ -35,7 +35,7 @@ export class Transaction {
 
   @OneToMany(
     () => TransactionsDetail,
-    (transactionDetail) => transactionDetail.id,
+    (transactionDetail) => transactionDetail.transaction,
     { eager: true }
   )
   transactionDetail: TransactionsDetail
