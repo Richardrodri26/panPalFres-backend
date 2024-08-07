@@ -17,6 +17,11 @@
     "strict": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "src/*": ["./src/*"]
+    },
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+
 }

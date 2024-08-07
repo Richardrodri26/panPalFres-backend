@@ -1,7 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { User } from "src/auth/entities/user.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { TransactionsDetail } from "src/transactions-details/entities/transactions-detail.entity";
+import { User } from "../../auth/entities/user.entity";
+import { TransactionsDetail } from "../../transactions-details/entities/transactions-detail.entity";
+import { forwardRef } from "@nestjs/common";
 
 
 @Entity({ name: "transactions" })
@@ -21,11 +22,15 @@ export class Transaction {
   type: string;
 
 
-  @ManyToOne(
-    () => User,
-    (user) => user.transactions,
-    { eager: true }
-  )
+  // @ManyToOne(
+  //   () => User,
+  //   (user) => user.transactions,
+  //   { eager: true }
+  // )
+
+  // @ManyToOne(() => forwardRef(() => User), (user) => user.transactions, { eager: true })
+
+  @ManyToOne(() => User, (user) => user.transactions, { eager: true })
   user: User
 
   @OneToMany(

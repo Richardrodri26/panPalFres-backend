@@ -1,5 +1,5 @@
-import { Product } from "src/products/entities";
-import { Transaction } from "src/transactions/entities/transaction.entity";
+import { forwardRef } from "@nestjs/common";
+import { Transaction } from "../../transactions/entities/transaction.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
@@ -38,10 +38,14 @@ export class User {
   // )
   // product: Product;
 
-  @OneToMany(
-    () => Transaction,
-    (transaction) => transaction.user
-  )
+  // @OneToMany(
+  //   () => Transaction,
+  //   (transaction) => transaction.user
+  // )
+
+  // @OneToMany(() => forwardRef(() => Transaction), (transaction) => transaction.user)
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
   transactions: Transaction[];
 
   @BeforeInsert()

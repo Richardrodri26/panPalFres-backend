@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Product } from "src/products/entities";
-import { Transaction } from "src/transactions/entities/transaction.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Product } from '../../products/entities/product.entity';
+import { Transaction } from '../../transactions/entities/transaction.entity';
 
 @Entity({ name: "transactionDetail" })
 export class TransactionsDetail {

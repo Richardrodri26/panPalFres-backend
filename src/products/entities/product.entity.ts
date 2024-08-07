@@ -1,8 +1,7 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ProductImage } from './';
-import { User } from 'src/auth/entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { TransactionsDetail } from 'src/transactions-details/entities/transactions-detail.entity';
+import { TransactionsDetail } from '../../transactions-details/entities/transactions-detail.entity';
 
 @Entity({ name: "products" })
 export class Product {

@@ -2,9 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { Auth, GetUser } from 'src/auth/decorators';
-import { User } from 'src/auth/entities/user.entity';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { Auth } from '../auth/decorators/auth.decoretor';
+import { User } from '../auth/entities/user.entity';
+import { GetUser } from '../auth/decorators/get.user.decorator';
+import { PaginationDto } from '../common/dtos/pagination.dto';
 
 @Controller('transactions')
 export class TransactionsController {

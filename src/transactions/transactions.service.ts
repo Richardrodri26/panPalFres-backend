@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
-import { User } from 'src/auth/entities/user.entity';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { TransactionsDetail } from 'src/transactions-details/entities/transactions-detail.entity';
 import { Repository } from 'typeorm';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Transaction } from './entities/transaction.entity';
+import { TransactionsDetail } from '../transactions-details/entities/transactions-detail.entity';
+import { User } from '../auth/entities/user.entity';
+import { PaginationDto } from '../common/dtos/pagination.dto';
 
 @Injectable()
 export class TransactionsService {

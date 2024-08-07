@@ -11,6 +11,7 @@ import { TransactionsModule } from './transactions/transactions.module';
 
 import { TransactionsDetailsModule } from './transactions-details/transactions-details.module';
 
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
