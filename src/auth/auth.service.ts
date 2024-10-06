@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -72,6 +73,81 @@ export class AuthService {
       token: this.getJwtToken({ id: user.id })
      }
   }
+
+  async getUsers(paginationDto: PaginationDto) {
+    try {
+      const { limit = 10, offset = 0 } = paginationDto
+
+      const totalUsers = await this.userRepository.count();
+
+    const usersData = await this.userRepository.find({
+      take: limit,
+        skip: offset,
+    })
+
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    // Calcular la página actual (usando el offset)
+    const currentPage = Math.floor(offset / limit) + 1;
+
+    // return usersData
+
+    return {
+      data: usersData,
+      totalItems: totalUsers,
+      totalPages,
+      currentPage,
+      limit,
+    }
+    
+    } catch (error) {
+      this.handleDBErrors(error)
+    }
+  }
+
+  async getUserById(id: string) {
+    try {
+    const userData = await this.userRepository.findOneBy({
+      id
+    })
+
+    return userData
+
+    } catch (error) {
+      this.handleDBErrors(error)
+    }
+  }
+
+  async updateUser (id: string, updateUserDto: UpdateAuthDto) {
+    const userData = await this.userRepository.findOneBy({ id })
+
+    if(!userData) throw new NotFoundException(`User with id: ${ id } not found`)
+
+      try {
+       await this.userRepository.update(
+        id,
+        updateUserDto
+       );
+
+       return {...userData, ...updateUserDto}
+      } catch (error) {
+        this.handleDBErrors(error)
+      }
+
+  }
+
+  async removeUser (id: string) {
+    try {
+      const user = await this.userRepository.findOneBy({ id })
+      await this.userRepository.remove(user)
+
+      return user
+
+    } catch (error) {
+      this.handleDBErrors(error)
+    }
+  }
+
 
   private handleDBErrors(error: any): never {
     if( error.code === "23505" ) {

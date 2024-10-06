@@ -31,50 +31,12 @@ export class TransactionsService {
 
   async create(createTransactionDto: CreateTransactionDto, user: User) {
     try {
-      const transactionId = randomUUID();
-      const transactionDetailId = randomUUID();
-
-      console.log('transactionDetailId', transactionDetailId);
-
-      // const transactionDetail = this.transactionsDetailRepository.create({
-      //   id: transactionDetailId,
-      //   transactions: [
-      //     {
-      //       id: transactionId,
-      //       type: createTransactionDto.type,
-      //       user,
-      //       transactionDetail: {
-      //         id: transactionDetailId,
-      //         products: createTransactionDto.products,
-      //       },
-      //     },
-      //   ],
-      //   products: createTransactionDto.products,
-      // });
-
-      // // console.log('transactionsExample', transactionsExample)
-      // console.log('transactionDetail', transactionDetail);
-
-      // const transactionDetailDB =
-      //   await this.transactionsDetailRepository.save(transactionDetail);
-
-      // console.log('transactionDetailDB', transactionDetailDB);
-
-      // const transactionDetail = await this.transactionDetailService.create({ products: createTransactionDto.products })
-
       const transaction = this.transactionRepository.create({
-        // id: transactionId,
         type: createTransactionDto.type,
         user,
-        // transactionDetail: transactionDetail,
       });
-//a3ac8e59-a741-4646-8d7e-ba69d2d65d73
       const transactionDB = await this.transactionRepository.save(transaction);
 
-      console.log('transaction', transaction)
-      console.log('transactionDB', transactionDB)
-
-      // return transaction;
       const details: TransactionsDetail[] = []
 
       createTransactionDto.products.map(product => {
@@ -88,9 +50,7 @@ export class TransactionsService {
         details.push(transactionDetail)
       })
 
-        const detailsDB = await this.transactionsDetailRepository.save(details)
-
-      console.log('detailsDB', detailsDB)
+        // const detailsDB = await this.transactionsDetailRepository.save(details)
 
         return transactionDB;
 
@@ -110,8 +70,6 @@ export class TransactionsService {
           user: true,
         },
       });
-
-      console.log('transactions', transactions)
 
       return transactions;
     } catch (error) {

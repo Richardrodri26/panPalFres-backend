@@ -48,6 +48,7 @@ export class ProductsService {
   async findAll(paginationDto: PaginationDto) {
     
     try {
+      const totalProducts = await this.productRepository.count();
       const { limit = 10, offset = 0 } = paginationDto
       const products = await this.productRepository.find({
         take: limit,
@@ -57,10 +58,28 @@ export class ProductsService {
         }
       })
 
-      return products.map((product) => ({
+      const totalPages = Math.ceil(totalProducts / limit);
+
+    // Calcular la página actual (usando el offset)
+    const currentPage = Math.floor(offset / limit) + 1;
+
+      // return products.map((product) => ({
+      //   ...product,
+      //   images: product.images.map(image => image.url)
+      // }))
+
+      const productsToSend = products.map((product) => ({
         ...product,
         images: product.images.map(image => image.url)
       }))
+
+      return {
+        data: productsToSend,
+        totalItems: totalProducts,
+        totalPages,
+        currentPage,
+        limit,
+      }
 
     } catch (error) {
       this.handleDBExceptions(error)

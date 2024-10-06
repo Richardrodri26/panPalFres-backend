@@ -53,6 +53,15 @@ export class Product {
   })
   slug: string;
 
+  @ApiProperty({
+    example: 0,
+    description: 'Product stock'
+  })
+  @Column('float', {
+    default: 0,
+  })
+  stock: number;
+
   // @ApiProperty({
   //   example: ["M", "XL"],
   //   description: 'Product sizes',
