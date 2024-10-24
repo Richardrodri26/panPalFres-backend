@@ -50,7 +50,7 @@ export class TransactionsService {
         details.push(transactionDetail)
       })
 
-        // const detailsDB = await this.transactionsDetailRepository.save(details)
+        const detailsDB = await this.transactionsDetailRepository.save(details)
 
         return transactionDB;
 
