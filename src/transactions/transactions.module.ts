@@ -7,13 +7,14 @@ import { TransactionsDetail } from 'src/transactions-details/entities/transactio
 import { Transaction } from './entities/transaction.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { TransactionsDetailsService } from 'src/transactions-details/transactions-details.service';
+import { Product } from 'src/products/entities';
 
 @Module({
   controllers: [TransactionsController],
   providers: [TransactionsService],
   imports: [
     TransactionsDetailsModule,
-    TypeOrmModule.forFeature([ TransactionsDetail, Transaction ]),
+    TypeOrmModule.forFeature([ TransactionsDetail, Transaction, Product ]),
     AuthModule,
   ]
 })

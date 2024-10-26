@@ -4,20 +4,21 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { randomUUID } from 'crypto';
-import { Repository } from 'typeorm';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { Transaction } from './entities/transaction.entity';
-import { TransactionsDetail } from '../transactions-details/entities/transactions-detail.entity';
-import { User } from '../auth/entities/user.entity';
-import { PaginationDto } from '../common/dtos/pagination.dto';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { randomUUID } from "crypto";
+import { Repository } from "typeorm";
+import { CreateTransactionDto } from "./dto/create-transaction.dto";
+import { UpdateTransactionDto } from "./dto/update-transaction.dto";
+import { Transaction } from "./entities/transaction.entity";
+import { TransactionsDetail } from "../transactions-details/entities/transactions-detail.entity";
+import { User } from "../auth/entities/user.entity";
+import { PaginationDto } from "../common/dtos/pagination.dto";
+import { Product } from "src/products/entities";
 
 @Injectable()
 export class TransactionsService {
-  private readonly logger = new Logger('TransactionsService');
+  private readonly logger = new Logger("TransactionsService");
 
   constructor(
     @InjectRepository(Transaction)
@@ -25,6 +26,8 @@ export class TransactionsService {
 
     @InjectRepository(TransactionsDetail)
     private readonly transactionsDetailRepository: Repository<TransactionsDetail>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
 
     // private readonly transactionDetailService: TransactionsDetailsService
   ) {}
@@ -37,23 +40,65 @@ export class TransactionsService {
       });
       const transactionDB = await this.transactionRepository.save(transaction);
 
-      const details: TransactionsDetail[] = []
+      const details: TransactionsDetail[] = [];
 
-      createTransactionDto.products.map(product => {
+      // console.log('createTransactionDto', createTransactionDto)
+
+      createTransactionDto.products.forEach(async (product) => {
+        const currentProduct = await this.productRepository.findOneBy({ id: product.id,  });
+
+        // const currentProduct = await this.productRepository.findOne({
+        //   where: { id: product.id },
+        //   relations: ["images"], // Asegúrate de incluir las relaciones necesarias
+        // });
+
+        if (!currentProduct) {
+          throw new NotFoundException(
+            `No se encontro el producto con id: ${product.id}`,
+          );
+        }
+
+        const currentStock = currentProduct.stock - product.stock;
+
+        // console.log('currentStock', currentStock)
+        // console.log('currentProduct', currentProduct)
+
+        if (currentStock < 0) {
+          throw new Error(
+            `No hay suficiente stock para el producto: ${product.title}`,
+          );
+        }
+
+        currentProduct.stock = currentStock;
+        currentProduct.images = product.images || [];
+
+        // await this.productRepository.update({id: product.id}, {
+        //   ...currentProduct,
+        //   stock: currentStock,
+        //   images: product.images || []
+        // })
+
+        // await this.productRepository.save({
+        //   ...currentProduct,
+        //   stock: currentStock
+        // })
+        await this.productRepository.save(currentProduct);
+
         const transactionDetail = this.transactionsDetailRepository.create({
-          transaction: 
-            {
-              id: transaction.id,
-            },
-          product: product,
+          transaction: {
+            id: transaction.id,
+          },
+          product: {
+            ...product,
+            stock: currentStock,
+          },
         });
-        details.push(transactionDetail)
-      })
+        details.push(transactionDetail);
+      });
 
-        const detailsDB = await this.transactionsDetailRepository.save(details)
+      const detailsDB = await this.transactionsDetailRepository.save(details);
 
-        return transactionDB;
-
+      return transactionDB;
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -86,7 +131,7 @@ export class TransactionsService {
           id,
           user,
         },
-        relations: ['transactionDetail'],
+        relations: ["transactionDetail"],
       });
 
       if (!transaction)
@@ -107,13 +152,13 @@ export class TransactionsService {
   }
 
   private handleDBExceptions(error: any) {
-    if (error.code === '23505') {
+    if (error.code === "23505") {
       throw new BadRequestException(error.detail);
     }
 
     this.logger.error(error);
     throw new InternalServerErrorException(
-      'Unexpected error, check server log',
+      "Unexpected error, check server log",
     );
   }
 }
