@@ -40,28 +40,83 @@ export class TransactionsService {
       });
       const transactionDB = await this.transactionRepository.save(transaction);
 
-      const details: TransactionsDetail[] = [];
+      let details: TransactionsDetail[] = [];
 
       // console.log('createTransactionDto', createTransactionDto)
 
-      createTransactionDto.products.forEach(async (product) => {
-        const currentProduct = await this.productRepository.findOneBy({ id: product.id,  });
+      // createTransactionDto.products.forEach(async (product) => {
+      //   // const currentProduct = await this.productRepository.findOneBy({ id: product.id,  });
 
-        // const currentProduct = await this.productRepository.findOne({
-        //   where: { id: product.id },
-        //   relations: ["images"], // Asegúrate de incluir las relaciones necesarias
-        // });
+      //   const currentProduct = await this.productRepository.findOne({
+      //     where: { id: product.id },
+      //     relations: ["images"], // Asegúrate de incluir las relaciones necesarias
+      //   });
+
+      //   if (!currentProduct) {
+      //     throw new NotFoundException(
+      //       `No se encontro el producto con id: ${product.id}`,
+      //     );
+      //   }
+
+      //   const currentStock = currentProduct.stock - product.stock;
+
+      //   // console.log('currentStock', currentStock)
+      //   // console.log('currentProduct', currentProduct)
+
+      //   if (currentStock < 0) {
+      //     throw new Error(
+      //       `No hay suficiente stock para el producto: ${product.title}`,
+      //     );
+      //   }
+
+      //   currentProduct.stock = currentStock;
+      //   currentProduct.images = product.images || [];
+
+      //   // await this.productRepository.update({id: product.id}, {
+      //   //   ...currentProduct,
+      //   //   stock: currentStock,
+      //   //   images: product.images || []
+      //   // })
+
+      //   // await this.productRepository.save({
+      //   //   ...currentProduct,
+      //   //   stock: currentStock
+      //   // })
+      //   await this.productRepository.save(currentProduct);
+
+      //   const transactionDetail = await this.transactionsDetailRepository.create({
+      //     transaction: {
+      //       id: transaction.id,
+      //     },
+      //     product: {
+      //       ...product,
+      //       stock: currentStock,
+      //     },
+      //   });
+
+      //   console.log('transactionDetail', transactionDetail)
+
+      //   details.push(transactionDetail);
+
+      // });
+
+      // Recorre todos los productos de manera secuencial
+      for (const product of createTransactionDto.products) {
+        const currentProduct = await this.productRepository.findOne({
+          where: { id: product.id },
+          relations: ["images"], // Incluye las relaciones necesarias
+        });
 
         if (!currentProduct) {
           throw new NotFoundException(
-            `No se encontro el producto con id: ${product.id}`,
+            `No se encontró el producto con id: ${product.id}`,
           );
         }
 
-        const currentStock = currentProduct.stock - product.stock;
-
-        // console.log('currentStock', currentStock)
-        // console.log('currentProduct', currentProduct)
+        const currentStock =
+          createTransactionDto.type === "ingreso"
+            ? currentProduct.stock + product.stock
+            : currentProduct.stock - product.stock;
 
         if (currentStock < 0) {
           throw new Error(
@@ -69,32 +124,20 @@ export class TransactionsService {
           );
         }
 
+        // Actualizar el producto con el nuevo stock
         currentProduct.stock = currentStock;
-        currentProduct.images = product.images || [];
+        currentProduct.images = product.images || []; // Asegúrate de manejar bien las imágenes
 
-        // await this.productRepository.update({id: product.id}, {
-        //   ...currentProduct,
-        //   stock: currentStock,
-        //   images: product.images || []
-        // })
-
-        // await this.productRepository.save({
-        //   ...currentProduct,
-        //   stock: currentStock
-        // })
         await this.productRepository.save(currentProduct);
 
         const transactionDetail = this.transactionsDetailRepository.create({
-          transaction: {
-            id: transaction.id,
-          },
-          product: {
-            ...product,
-            stock: currentStock,
-          },
+          transaction: { id: transaction.id },
+          product: { ...product, stock: currentStock },
+          quantity: product.stock,
         });
-        details.push(transactionDetail);
-      });
+
+        details.push(transactionDetail); // Acumula los detalles
+      }
 
       const detailsDB = await this.transactionsDetailRepository.save(details);
 

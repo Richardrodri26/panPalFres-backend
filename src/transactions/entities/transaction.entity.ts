@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "../../auth/entities/user.entity";
 import { TransactionsDetail } from "../../transactions-details/entities/transactions-detail.entity";
 import { forwardRef } from "@nestjs/common";
@@ -20,6 +20,12 @@ export class Transaction {
     nullable: true,
   })
   type: string;
+
+  @CreateDateColumn()
+  createdAt: Date; 
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
 
   // @ManyToOne(
