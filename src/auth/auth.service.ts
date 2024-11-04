@@ -10,12 +10,15 @@ import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { PrinterService } from 'src/printer/printer.service';
+import { getUsersReport } from 'src/reports/users.report';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-    private readonly jwtService: JwtService
+    private readonly jwtService: JwtService,
+    private printerService: PrinterService
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -146,6 +149,17 @@ export class AuthService {
     } catch (error) {
       this.handleDBErrors(error)
     }
+  }
+
+  async getUsersReport() {
+    const usersData = await this.userRepository.find()
+    const docDefinition = getUsersReport({
+      users: usersData || []
+    });
+
+    const doc = this.printerService.createPdf(docDefinition);
+
+    return doc;
   }
 
 

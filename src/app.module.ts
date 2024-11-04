@@ -10,6 +10,7 @@ import { SeedModule } from './seed/seed.module';
 import { TransactionsModule } from './transactions/transactions.module';
 
 import { TransactionsDetailsModule } from './transactions-details/transactions-details.module';
+import { PrinterModule } from './printer/printer.module';
 
 
 @Module({
@@ -34,6 +35,7 @@ import { TransactionsDetailsModule } from './transactions-details/transactions-d
     // TypeOrmModule.forFeature([User, Product, ProductImage]),
     // TypeOrmModule.forFeature([TransactionDetail]),
     TransactionsDetailsModule,
+    PrinterModule,
   ],
 })
 export class AppModule {}

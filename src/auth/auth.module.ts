@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JWTStrategy } from './strategies/jwt.strategy';
+import { PrinterModule } from 'src/printer/printer.module';
 
 @Module({
   controllers: [AuthController],
@@ -25,8 +26,10 @@ import { JWTStrategy } from './strategies/jwt.strategy';
         signOptions: {
           expiresIn: '2h',
         },
-      })
+      }),
     }),
+
+    PrinterModule
 
     // JwtModule.register({
     //   secret: process.env.JWT_SECRET,
