@@ -78,7 +78,7 @@ export class AuthController {
     const pdfDoc = await this.authService.getUsersReport();
 
     response.setHeader("Content-Type", "application/pdf");
-    pdfDoc.info.Title = "Billing-Report";
+    pdfDoc.info.Title = "User-Report";
     pdfDoc.pipe(response);
     pdfDoc.end();
   }
