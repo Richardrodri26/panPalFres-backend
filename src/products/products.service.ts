@@ -159,14 +159,25 @@ export class ProductsService {
   }
 
   async remove(id: string) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+  
     try {
-      const product = await this.findOne(id)
-      await this.productRepository.remove(product)
-
-      return product
-
+      // Eliminar transacciones asociadas
+      await queryRunner.manager.delete('transactionDetail', { product: { id } });
+  
+      // Eliminar producto
+      const product = await this.findOne(id);
+      await queryRunner.manager.remove(product);
+  
+      await queryRunner.commitTransaction();
+      return product;
     } catch (error) {
-      this.handleDBExceptions(error)
+      await queryRunner.rollbackTransaction();
+      this.handleDBExceptions(error);
+    } finally {
+      await queryRunner.release();
     }
   }
 

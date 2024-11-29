@@ -12,6 +12,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { PrinterService } from 'src/printer/printer.service';
 import { getUsersReport } from 'src/reports/users.report';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 @Injectable()
 export class AuthService {
   constructor(
@@ -139,17 +140,31 @@ export class AuthService {
 
   }
 
-  async removeUser (id: string) {
-    try {
-      const user = await this.userRepository.findOneBy({ id })
-      await this.userRepository.remove(user)
+ 
+async removeUser(id: string) {
+  const queryRunner = this.userRepository.manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
 
-      return user
+  try {
+    // Eliminar transacciones asociadas
+    await queryRunner.manager.delete(Transaction, { user: { id } });
 
-    } catch (error) {
-      this.handleDBErrors(error)
-    }
+    // Eliminar usuario
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException(`User with id: ${id} not found`);
+
+    await queryRunner.manager.remove(user);
+
+    await queryRunner.commitTransaction();
+    return user;
+  } catch (error) {
+    await queryRunner.rollbackTransaction();
+    this.handleDBErrors(error);
+  } finally {
+    await queryRunner.release();
   }
+}
 
   async getUsersReport() {
     const usersData = await this.userRepository.find()
